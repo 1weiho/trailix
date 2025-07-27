@@ -1,0 +1,251 @@
+.timeline-preview-container {
+  background-color: #f3f4f6;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.timeline-preview {
+  position: relative;
+  background-color: #e5e7eb;
+  border-radius: 4px;
+  cursor: pointer;
+  user-select: none;
+  overflow: hidden;
+}
+
+.timeline-preview-span {
+  position: absolute;
+  border-radius: 2px;
+  transition: all 0.3s ease-out;
+}
+
+.timeline-preview-span:hover {
+  opacity: 0.8;
+}
+
+.timeline-preview-viewport {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background-color: rgba(209, 213, 219, 0.6);
+  border: 2px solid #6b7280;
+  border-radius: 4px;
+  cursor: move;
+  transition: all 0.3s ease-out;
+}
+
+.timeline-preview-viewport-handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background-color: #6b7280;
+  cursor: ew-resize;
+}
+
+.timeline-preview-viewport-handle-left {
+  left: 0;
+}
+
+.timeline-preview-viewport-handle-right {
+  right: 0;
+}
+
+/* Main Timeline Styles */
+.timeline-container {
+  background-color: white;
+  overflow: hidden;
+  position: relative;
+}
+
+.timeline-header {
+  position: relative;
+  border-bottom: 1px solid #e5e7eb;
+  overflow: hidden;
+  height: 50px;
+}
+
+.timeline-header-container {
+  position: relative;
+  height: 100%;
+  cursor: crosshair;
+  overflow: hidden;
+  max-width: 100%;
+}
+
+.timeline-time-marker {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  border-left: 1px solid #e5e7eb;
+  transition: all 0.3s ease-out;
+}
+
+.timeline-time-marker-label {
+  position: absolute;
+  top: 12px;
+  font-size: 12px;
+  color: #6b7280;
+  white-space: nowrap;
+  user-select: none;
+  font-weight: 500;
+  transition: all 0.3s ease-out;
+}
+
+.timeline-mouse-line {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  border-left: 1px solid #9ca3af;
+  pointer-events: none;
+  z-index: 10;
+  transition: all 0.15s ease-out;
+}
+
+.timeline-mouse-tooltip {
+  position: absolute;
+  top: -4px;
+  left: 4px;
+  background-color: #1f2937;
+  color: white;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.timeline-selection-overlay {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  background-color: rgba(209, 213, 219, 0.4);
+  pointer-events: none;
+  transition: all 0.15s ease-out;
+}
+
+.timeline-content {
+  position: relative;
+  overflow: hidden;
+  background-color: #f9fafb;
+}
+
+.timeline-inner {
+  position: relative;
+  overflow: hidden;
+  max-width: 100%;
+}
+
+.timeline-span {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  font-size: 14px;
+  border-radius: 6px;
+  transition: all 0.3s ease-out;
+  height: 28px;
+  min-width: 20px;
+}
+
+.timeline-span-level-0 {
+  background-color: #374151;
+  color: white;
+}
+
+.timeline-span-level-1 {
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+}
+
+.timeline-span-level-2 {
+  background-color: #e5e7eb;
+  color: #1f2937;
+  border: 1px solid #d1d5db;
+}
+
+.timeline-span-level-3 {
+  background-color: #d1d5db;
+  color: #1f2937;
+  border: 1px solid #9ca3af;
+}
+
+.timeline-span-level-4 {
+  background-color: #4b5563;
+  color: white;
+}
+
+.timeline-span-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+  flex: 1;
+}
+
+.timeline-span-duration {
+  margin-left: auto;
+  font-size: 12px;
+  opacity: 0.75;
+  font-family: monospace;
+}
+
+.timeline-mouse-line-content {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-left: 1px solid #9ca3af;
+  pointer-events: none;
+  z-index: 20;
+  transition: all 0.15s ease-out;
+}
+
+.timeline-selection-overlay-content {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background-color: rgba(209, 213, 219, 0.4);
+  pointer-events: none;
+  z-index: 10;
+  transition: all 0.15s ease-out;
+}
+
+.timeline-controls {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  display: flex;
+  gap: 4px;
+}
+
+.timeline-control-button {
+  border-radius: 50%;
+  height: 32px;
+  width: 32px;
+  padding: 0;
+  border: 1px solid #e5e7eb;
+  background-color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timeline-control-button:hover {
+  background-color: #f9fafb;
+}
+
+.timeline-control-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.timeline-control-button:disabled:hover {
+  background-color: white;
+}
+
+.timeline-control-icon {
+  height: 16px;
+  width: 16px;
+  color: #4b5563;
+}

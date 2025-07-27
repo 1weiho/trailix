@@ -1,103 +1,174 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
+import { useState } from "react"
+import { Timeline, TimelinePreview, type TimelineSpan } from "trailix"
+
+const deploymentSpans: TimelineSpan[] = [
+  {
+    id: "vercel-deployment",
+    name: "Vercel Deployment",
+    startTime: 0,
+    duration: 45000, // 45 seconds total
+    level: 0,
+    children: [
+      {
+        id: "git-clone",
+        name: "Git Clone",
+        startTime: 500,
+        duration: 2000,
+        level: 1,
+        children: [
+          {
+            id: "fetch-repo",
+            name: "Fetch Repository",
+            startTime: 800,
+            duration: 1200,
+            level: 2,
+          },
+          {
+            id: "extract-files",
+            name: "Extract Files",
+            startTime: 2100,
+            duration: 400,
+            level: 2,
+          },
+        ],
+      },
+      {
+        id: "install-dependencies",
+        name: "Install Dependencies",
+        startTime: 3000,
+        duration: 8000,
+        level: 1,
+        children: [
+          {
+            id: "npm-install",
+            name: "npm install",
+            startTime: 3200,
+            duration: 6000,
+            level: 2,
+          },
+          {
+            id: "cache-deps",
+            name: "Cache Dependencies",
+            startTime: 9300,
+            duration: 700,
+            level: 2,
+          },
+        ],
+      },
+      {
+        id: "build-process",
+        name: "Build Process",
+        startTime: 12000,
+        duration: 25000,
+        level: 1,
+        children: [
+          {
+            id: "next-build",
+            name: "Next.js Build",
+            startTime: 12500,
+            duration: 18000,
+            level: 2,
+            children: [
+              {
+                id: "compile-js",
+                name: "Compile JavaScript",
+                startTime: 13000,
+                duration: 8000,
+                level: 3,
+              },
+              {
+                id: "optimize-images",
+                name: "Optimize Images",
+                startTime: 22000,
+                duration: 3000,
+                level: 3,
+              },
+            ],
+          },
+          {
+            id: "generate-static",
+            name: "Generate Static Pages",
+            startTime: 31000,
+            duration: 4000,
+            level: 2,
+          },
+          {
+            id: "create-manifest",
+            name: "Create Build Manifest",
+            startTime: 36000,
+            duration: 1000,
+            level: 2,
+          },
+        ],
+      },
+      {
+        id: "deploy-to-edge",
+        name: "Deploy to Edge Network",
+        startTime: 38000,
+        duration: 7000,
+        level: 1,
+        children: [
+          {
+            id: "upload-assets",
+            name: "Upload Assets",
+            startTime: 38500,
+            duration: 3000,
+            level: 2,
+          },
+          {
+            id: "distribute-cdn",
+            name: "Distribute to CDN",
+            startTime: 42000,
+            duration: 2500,
+            level: 2,
+          },
+          {
+            id: "update-routing",
+            name: "Update Edge Routing",
+            startTime: 45000,
+            duration: 2000,
+            level: 2,
+          },
+        ],
+      },
+    ],
+  },
+]
+
+export default function Page() {
+  const [viewStart, setViewStart] = useState(0)
+  const [viewEnd, setViewEnd] = useState(45000)
+
+  const handleViewChange = (start: number, end: number) => {
+    setViewStart(start)
+    setViewEnd(end)
+  }
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="p-4 space-y-4 max-w-7xl mx-auto">
+      {/* Timeline Preview/Minimap */}
+      <TimelinePreview
+        spans={deploymentSpans}
+        totalDuration={45000}
+        viewStart={viewStart}
+        viewEnd={viewEnd}
+        onViewChange={handleViewChange}
+        className="w-full"
+      />
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      {/* Main Timeline */}
+      <div className="w-full overflow-hidden relative" style={{ maxWidth: "100%" }}>
+        <Timeline
+          spans={deploymentSpans}
+          totalDuration={45000}
+          viewStart={viewStart}
+          viewEnd={viewEnd}
+          onViewChange={handleViewChange}
+          className="w-full"
+        />
+      </div>
     </div>
-  );
+  )
 }
