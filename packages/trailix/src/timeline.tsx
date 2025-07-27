@@ -4,7 +4,7 @@ import React from "react"
 import { useState, useRef, useCallback, useMemo, useLayoutEffect } from "react"
 import ZoomIn from "./icons/zoom-in"
 import ZoomOut from "./icons/zoom-out"
-import RotateCcw from "./icons/rotate-ccw"
+import Minus from "./icons/minus"
 import "./style.css"
 
 export interface TimelineSpan {
@@ -742,7 +742,7 @@ export function Timeline({
           <ZoomIn className="timeline-control-icon" />
         </button>
         <button className="timeline-control-button" onClick={resetZoom}>
-          <RotateCcw className="timeline-control-icon" />
+          <Minus className="timeline-control-icon" />
         </button>
         <button className="timeline-control-button" onClick={zoomOut} disabled={zoomLevel <= 0.1}>
           <ZoomOut className="timeline-control-icon" />
