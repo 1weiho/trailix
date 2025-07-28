@@ -11,14 +11,16 @@ import { TimelineSpan } from './type';
 
 interface TimelineProps {
   className?: string;
+  snapToSpan?: boolean;
 }
 
 const SPAN_HEIGHT = 28;
 const SPAN_MARGIN = 6;
 const HEADER_HEIGHT = 50;
 const ZOOM_FACTOR = 1.5;
+const SNAP_MARGIN_PX = 32;
 
-const Timeline = ({ className = '' }: TimelineProps) => {
+const Timeline = ({ className = '', snapToSpan = false }: TimelineProps) => {
   const [zoomLevel, setZoomLevel] = useState(1);
   const [containerDimensions, setContainerDimensions] = useState({
     width: 0,
@@ -121,8 +123,27 @@ const Timeline = ({ className = '' }: TimelineProps) => {
     if (!containerRef.current) return;
 
     const rect = containerRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const time = pixelToTime(x, rect.width);
+    const rawX = e.clientX - rect.left;
+
+    let useX = rawX;
+    if (snapToSpan && flatSpans.length > 0) {
+      const boundaries = flatSpans.flatMap((span) => {
+        const startPx = timeToPixel(span.startTime, rect.width);
+        const endPx = timeToPixel(span.startTime + span.duration, rect.width);
+        return [startPx, endPx];
+      });
+      let nearest = boundaries[0];
+      for (const px of boundaries) {
+        if (Math.abs(px - rawX) < Math.abs(nearest - rawX)) {
+          nearest = px;
+        }
+      }
+      if (Math.abs(nearest - rawX) <= SNAP_MARGIN_PX) {
+        useX = nearest;
+      }
+    }
+
+    const time = pixelToTime(useX, rect.width);
     setMousePosition(time);
 
     if (isSelecting) {

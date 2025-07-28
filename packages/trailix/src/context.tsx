@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import type { TimelineSpan } from 'trailix';
+import type { TimelineSpan } from './type';
 
 interface TimelineContextType {
   spans: TimelineSpan[];

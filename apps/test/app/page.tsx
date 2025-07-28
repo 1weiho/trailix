@@ -153,7 +153,7 @@ export default function Page() {
           className="w-full overflow-hidden relative"
           style={{ maxWidth: '100%' }}
         >
-          <Timeline className="w-full" />
+          <Timeline className="w-full" snapToSpan />
         </div>
       </TimelineProvider>
     </div>
