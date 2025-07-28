@@ -148,34 +148,6 @@
   cursor: pointer;
 }
 
-.timeline-span-level-0 {
-  background-color: #374151;
-  color: white;
-}
-
-.timeline-span-level-1 {
-  background-color: #f3f4f6;
-  color: #374151;
-  border: 1px solid #e5e7eb;
-}
-
-.timeline-span-level-2 {
-  background-color: #e5e7eb;
-  color: #1f2937;
-  border: 1px solid #d1d5db;
-}
-
-.timeline-span-level-3 {
-  background-color: #d1d5db;
-  color: #1f2937;
-  border: 1px solid #9ca3af;
-}
-
-.timeline-span-level-4 {
-  background-color: #4b5563;
-  color: white;
-}
-
 .timeline-span-name {
   overflow: hidden;
   text-overflow: ellipsis;

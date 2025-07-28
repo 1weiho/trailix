@@ -7,7 +7,7 @@ import ZoomOut from './icons/zoom-out';
 import Minus from './icons/minus';
 import './style.css';
 import { useTimelineContext } from './context';
-import { TimelineSpan } from './type';
+import { ColorStyle, TimelineSpan } from './type';
 
 interface TimelineProps {
   className?: string;
@@ -28,8 +28,14 @@ const Timeline = ({ className = '', snapToSpan = false }: TimelineProps) => {
   });
   const [forceUpdate, setForceUpdate] = useState(0);
 
-  const { spans, totalDuration, viewStart, viewEnd, onViewChange } =
-    useTimelineContext();
+  const {
+    spans,
+    totalDuration,
+    viewStart,
+    viewEnd,
+    onViewChange,
+    levelStyles,
+  } = useTimelineContext();
 
   const [isSelecting, setIsSelecting] = useState(false);
   const [selectionStart, setSelectionStart] = useState(0);
@@ -417,6 +423,11 @@ const Timeline = ({ className = '', snapToSpan = false }: TimelineProps) => {
     timeToPixel,
   ]);
 
+  const getLevelStyle = (level: number): ColorStyle => {
+    const idx = level % levelStyles.length;
+    return levelStyles[idx];
+  };
+
   return (
     <div className={`timeline-container ${className}`}>
       {/* Header with time markers */}
@@ -531,15 +542,21 @@ const Timeline = ({ className = '', snapToSpan = false }: TimelineProps) => {
               leftPosition;
             const containerWidth = timelineRef.current?.clientWidth || 1000;
 
+            const level = span.level || 0;
+            const styleDef = getLevelStyle(level);
+
             return (
               <div
                 key={span.id}
-                className={getSpanClassName(span)}
+                className="timeline-span"
                 style={{
                   top: index * (SPAN_HEIGHT + SPAN_MARGIN) + 10,
                   left: `${leftPosition}px`,
                   width: `${width}px`,
                   maxWidth: `${containerWidth - leftPosition}px`,
+                  background: styleDef.background,
+                  color: styleDef.color,
+                  border: styleDef.border,
                 }}
                 title={`${span.name} (${formatTime(span.duration)})`}
                 onClick={() => handleSpanClick(span)}

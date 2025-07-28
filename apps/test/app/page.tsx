@@ -5,6 +5,7 @@ import {
   TimelinePreview,
   type TimelineSpan,
   TimelineProvider,
+  ColorStyle,
 } from 'trailix';
 
 const deploymentSpans: TimelineSpan[] = [
@@ -141,10 +142,42 @@ const deploymentSpans: TimelineSpan[] = [
   },
 ];
 
+const theme: ColorStyle[] = [
+  {
+    background: '#FFE5E0',
+    color: '#B23A48',
+    border: '1px solid #FFB3A7',
+  },
+  {
+    background: '#FFF0E1',
+    color: '#C46210',
+    border: '1px solid #FFD5A6',
+  },
+  {
+    background: '#FFFBE5',
+    color: '#8A6E30',
+    border: '1px solid #FFF3B0',
+  },
+  {
+    background: '#E7FFF2',
+    color: '#2E8B57',
+    border: '1px solid #B0FFD6',
+  },
+  {
+    background: '#E5F3FF',
+    color: '#1A73E8',
+    border: '1px solid #A6D4FF',
+  },
+];
+
 export default function Page() {
   return (
     <div className="p-4 space-y-4 max-w-7xl mx-auto">
-      <TimelineProvider spans={deploymentSpans} totalDuration={45000}>
+      <TimelineProvider
+        spans={deploymentSpans}
+        totalDuration={45000}
+        levelStyles={theme}
+      >
         {/* Timeline Preview/Minimap */}
         <TimelinePreview className="w-full" />
 

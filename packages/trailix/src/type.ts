@@ -7,3 +7,9 @@ export interface TimelineSpan {
   level?: number;
   metadata?: Record<string, any>;
 }
+
+export interface ColorStyle {
+  background: string;
+  color: string;
+  border?: string;
+}

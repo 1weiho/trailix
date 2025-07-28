@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import type { TimelineSpan } from './type';
+import type { ColorStyle, TimelineSpan } from './type';
 
 interface TimelineContextType {
   spans: TimelineSpan[];
@@ -9,6 +9,7 @@ interface TimelineContextType {
   viewStart: number;
   viewEnd: number;
   onViewChange: (start: number, end: number) => void;
+  levelStyles: ColorStyle[];
 }
 
 const TimelineContext = createContext<TimelineContextType | undefined>(
@@ -20,6 +21,7 @@ interface TimelineProviderProps {
   totalDuration: number;
   initialStart?: number;
   initialEnd?: number;
+  levelStyles?: ColorStyle[];
   children: ReactNode;
 }
 
@@ -28,6 +30,13 @@ export function TimelineProvider({
   totalDuration,
   initialStart = 0,
   initialEnd = totalDuration,
+  levelStyles = [
+    { background: '#374151', color: 'white' },
+    { background: '#f3f4f6', color: '#374151', border: '1px solid #e5e7eb' },
+    { background: '#e5e7eb', color: '#1f2937', border: '1px solid #d1d5db' },
+    { background: '#d1d5db', color: '#1f2937', border: '1px solid #9ca3af' },
+    { background: '#4b5563', color: 'white' },
+  ],
   children,
 }: TimelineProviderProps) {
   const [viewStart, setViewStart] = useState(initialStart);
@@ -46,6 +55,7 @@ export function TimelineProvider({
         viewStart,
         viewEnd,
         onViewChange: handleViewChange,
+        levelStyles,
       }}
     >
       {children}

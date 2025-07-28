@@ -13,18 +13,6 @@ interface TimelinePreviewProps {
   className?: string;
 }
 
-const getSpanPreviewColor = (span: TimelineSpan & { level: number }) => {
-  const colors = [
-    '#9ca3af', // gray-400
-    '#d1d5db', // gray-300
-    '#e5e7eb', // gray-200
-    '#f3f4f6', // gray-100
-    '#6b7280', // gray-500
-  ];
-  const colorIndex = (span.level || 0) % colors.length;
-  return colors[colorIndex];
-};
-
 const TimelinePreview = ({ className = '' }: TimelinePreviewProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState(0);
@@ -36,8 +24,14 @@ const TimelinePreview = ({ className = '' }: TimelinePreviewProps) => {
   });
   const [forcePreviewUpdate, setForcePreviewUpdate] = useState(0);
 
-  const { spans, totalDuration, viewStart, viewEnd, onViewChange } =
-    useTimelineContext();
+  const {
+    spans,
+    totalDuration,
+    viewStart,
+    viewEnd,
+    onViewChange,
+    levelStyles,
+  } = useTimelineContext();
 
   const layoutSpans = useMemo(() => {
     const flatten = (
@@ -182,6 +176,10 @@ const TimelinePreview = ({ className = '' }: TimelinePreviewProps) => {
     Math.min(5, (previewHeight - 20) / Math.max(1, layoutSpans.totalRows)),
   );
 
+  const getPreviewColor = (level: number): string => {
+    return levelStyles[level % levelStyles.length].background;
+  };
+
   return (
     <div className={`timeline-preview-container ${className}`}>
       <div
@@ -211,6 +209,8 @@ const TimelinePreview = ({ className = '' }: TimelinePreviewProps) => {
             return null;
           }
 
+          const color = getPreviewColor(span.level || 0);
+
           return (
             <div
               key={span.id}
@@ -220,7 +220,7 @@ const TimelinePreview = ({ className = '' }: TimelinePreviewProps) => {
                 width: `${width}px`,
                 top: `${8 + span.row * (spanHeight + 1)}px`,
                 height: `${spanHeight}px`,
-                backgroundColor: getSpanPreviewColor(span),
+                backgroundColor: color,
               }}
               title={`${span.name} (${span.duration.toFixed(2)}ms)`}
             />
