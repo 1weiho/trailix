@@ -6,6 +6,7 @@ import ZoomIn from './icons/zoom-in';
 import ZoomOut from './icons/zoom-out';
 import Minus from './icons/minus';
 import './style.css';
+import { useTimelineContext } from './context';
 
 export interface TimelineSpan {
   id: string;
@@ -18,22 +19,10 @@ export interface TimelineSpan {
 }
 
 interface TimelinePreviewProps {
-  spans: TimelineSpan[];
-  totalDuration: number;
-  viewStart: number;
-  viewEnd: number;
-  onViewChange: (start: number, end: number) => void;
   className?: string;
 }
 
-export function TimelinePreview({
-  spans,
-  totalDuration,
-  viewStart,
-  viewEnd,
-  onViewChange,
-  className = '',
-}: TimelinePreviewProps) {
+export function TimelinePreview({ className = '' }: TimelinePreviewProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState(0);
   const [dragOffset, setDragOffset] = useState(0);
@@ -43,6 +32,9 @@ export function TimelinePreview({
     height: 0,
   });
   const [forcePreviewUpdate, setForcePreviewUpdate] = useState(0);
+
+  const { spans, totalDuration, viewStart, viewEnd, onViewChange } =
+    useTimelineContext();
 
   const layoutSpans = useMemo(() => {
     const flatten = (
@@ -261,11 +253,6 @@ function getSpanPreviewColor(span: TimelineSpan & { level: number }) {
 }
 
 interface TimelineProps {
-  spans: TimelineSpan[];
-  totalDuration: number;
-  viewStart?: number;
-  viewEnd?: number;
-  onViewChange?: (start: number, end: number) => void;
   className?: string;
 }
 
@@ -274,16 +261,7 @@ const SPAN_MARGIN = 6;
 const HEADER_HEIGHT = 50;
 const ZOOM_FACTOR = 1.5;
 
-export function Timeline({
-  spans,
-  totalDuration,
-  viewStart: externalViewStart,
-  viewEnd: externalViewEnd,
-  onViewChange: externalOnViewChange,
-  className = '',
-}: TimelineProps) {
-  const [internalViewStart, setInternalViewStart] = useState(0);
-  const [internalViewEnd, setInternalViewEnd] = useState(totalDuration);
+export function Timeline({ className = '' }: TimelineProps) {
   const [zoomLevel, setZoomLevel] = useState(1);
   const [containerDimensions, setContainerDimensions] = useState({
     width: 0,
@@ -291,17 +269,8 @@ export function Timeline({
   });
   const [forceUpdate, setForceUpdate] = useState(0);
 
-  const viewStart = externalViewStart ?? internalViewStart;
-  const viewEnd = externalViewEnd ?? internalViewEnd;
-
-  const setViewRange = (start: number, end: number) => {
-    if (externalOnViewChange) {
-      externalOnViewChange(start, end);
-    } else {
-      setInternalViewStart(start);
-      setInternalViewEnd(end);
-    }
-  };
+  const { spans, totalDuration, viewStart, viewEnd, onViewChange } =
+    useTimelineContext();
 
   const [isSelecting, setIsSelecting] = useState(false);
   const [selectionStart, setSelectionStart] = useState(0);
@@ -414,7 +383,7 @@ export function Timeline({
           'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
       }
 
-      setViewRange(Math.max(0, newStart), Math.min(totalDuration, newEnd));
+      onViewChange(Math.max(0, newStart), Math.min(totalDuration, newEnd));
       setZoomLevel(zoomLevel * (totalDuration / (newEnd - newStart)));
 
       setTimeout(() => {
@@ -456,7 +425,7 @@ export function Timeline({
         'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
     }
 
-    setViewRange(newStart, newEnd);
+    onViewChange(newStart, newEnd);
     setZoomLevel(zoomLevel * ZOOM_FACTOR);
 
     setTimeout(() => {
@@ -484,7 +453,7 @@ export function Timeline({
         'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
     }
 
-    setViewRange(newStart, newEnd);
+    onViewChange(newStart, newEnd);
     setZoomLevel(zoomLevel / ZOOM_FACTOR);
 
     setTimeout(() => {
@@ -507,7 +476,7 @@ export function Timeline({
         'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
     }
 
-    setViewRange(0, totalDuration);
+    onViewChange(0, totalDuration);
     setZoomLevel(1);
 
     setTimeout(() => {

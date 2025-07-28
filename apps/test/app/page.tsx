@@ -1,7 +1,11 @@
 'use client';
 
-import { useState } from 'react';
-import { Timeline, TimelinePreview, type TimelineSpan } from 'trailix';
+import {
+  Timeline,
+  TimelinePreview,
+  type TimelineSpan,
+  TimelineProvider,
+} from 'trailix';
 
 const deploymentSpans: TimelineSpan[] = [
   {
@@ -138,40 +142,20 @@ const deploymentSpans: TimelineSpan[] = [
 ];
 
 export default function Page() {
-  const [viewStart, setViewStart] = useState(0);
-  const [viewEnd, setViewEnd] = useState(45000);
-
-  const handleViewChange = (start: number, end: number) => {
-    setViewStart(start);
-    setViewEnd(end);
-  };
-
   return (
     <div className="p-4 space-y-4 max-w-7xl mx-auto">
-      {/* Timeline Preview/Minimap */}
-      <TimelinePreview
-        spans={deploymentSpans}
-        totalDuration={45000}
-        viewStart={viewStart}
-        viewEnd={viewEnd}
-        onViewChange={handleViewChange}
-        className="w-full"
-      />
+      <TimelineProvider spans={deploymentSpans} totalDuration={45000}>
+        {/* Timeline Preview/Minimap */}
+        <TimelinePreview className="w-full" />
 
-      {/* Main Timeline */}
-      <div
-        className="w-full overflow-hidden relative"
-        style={{ maxWidth: '100%' }}
-      >
-        <Timeline
-          spans={deploymentSpans}
-          totalDuration={45000}
-          viewStart={viewStart}
-          viewEnd={viewEnd}
-          onViewChange={handleViewChange}
-          className="w-full"
-        />
-      </div>
+        {/* Main Timeline */}
+        <div
+          className="w-full overflow-hidden relative"
+          style={{ maxWidth: '100%' }}
+        >
+          <Timeline className="w-full" />
+        </div>
+      </TimelineProvider>
     </div>
   );
 }
