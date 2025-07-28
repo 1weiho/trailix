@@ -318,6 +318,25 @@ export function Timeline({ className = '' }: TimelineProps) {
 
   const flatSpans = useMemo(() => flattenSpans(spans), [spans, flattenSpans]);
 
+  const handleSpanClick = (span: TimelineSpan & { level: number }) => {
+    const spanStart = span.startTime;
+    const spanEnd = Math.min(totalDuration, span.startTime + span.duration);
+    const spanLength = spanEnd - spanStart;
+
+    const paddingRatio = 0.1;
+    const padding = spanLength * paddingRatio;
+
+    const newStart = Math.max(0, spanStart - padding);
+    const newEnd = Math.min(totalDuration, spanEnd + padding);
+
+    onViewChange(newStart, newEnd);
+
+    const oldDuration = viewDuration;
+    const newDuration = newEnd - newStart;
+    const ratio = oldDuration / newDuration;
+    setZoomLevel((prev) => prev * ratio);
+  };
+
   useLayoutEffect(() => {
     const updateDimensions = () => {
       if (containerRef.current && timelineRef.current) {
@@ -745,6 +764,7 @@ export function Timeline({ className = '' }: TimelineProps) {
                   maxWidth: `${containerWidth - leftPosition}px`,
                 }}
                 title={`${span.name} (${formatTime(span.duration)})`}
+                onClick={() => handleSpanClick(span)}
               >
                 <span className="timeline-span-name">{span.name}</span>
                 <span className="timeline-span-duration">

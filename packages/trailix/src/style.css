@@ -145,6 +145,7 @@
   transition: all 0.3s ease-out;
   height: 28px;
   min-width: 20px;
+  cursor: pointer;
 }
 
 .timeline-span-level-0 {
@@ -248,4 +249,13 @@
   height: 16px;
   width: 16px;
   color: #4b5563;
+}
+
+.timeline-container,
+.timeline-preview,
+.timeline-header-container,
+.timeline-inner {
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
 }
