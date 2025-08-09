@@ -1,0 +1,30 @@
+---
+title: Types
+description: TypeScript interfaces used by Trailix.
+---
+
+## TimelineSpan
+
+```ts
+export interface TimelineSpan {
+  id: string;
+  name: string;
+  startTime: number; // ms
+  duration: number; // ms
+  children?: TimelineSpan[];
+  level?: number; // assigned internally when flattened
+  metadata?: Record<string, any>; // attach anything you need
+}
+```
+
+## ColorStyle
+
+```ts
+export interface ColorStyle {
+  background: string;
+  color: string;
+  border?: string;
+}
+```
+
+These types are exported from `trailix` and can be imported directly.

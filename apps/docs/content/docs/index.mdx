@@ -1,13 +1,55 @@
 ---
-title: Hello World
-description: Your first document
+title: Trailix
+description: Interactive timeline components for React — visualize nested spans with zoom, pan, and a preview mini-map.
 ---
 
-Welcome to the docs! You can start writing documents in `/content/docs`.
-
-## What is Next?
+Trailix is a lightweight set of React components for visualizing timelines. It’s great for performance traces, UX walkthroughs, and product demos.
 
 <Cards>
-  <Card title="Learn more about Next.js" href="https://nextjs.org/docs" />
-  <Card title="Learn more about Fumadocs" href="https://fumadocs.vercel.app" />
+  <Card title="Installation" href="/docs/installation" />
+  <Card title="Getting Started" href="/docs/getting-started" />
+  <Card title="Examples" href="/docs/examples" />
+  <Card title="GitHub" href="https://github.com/1weiho/trailix" />
 </Cards>
+
+## Features
+
+- Interactive zoom, select-to-zoom, and span-click-to-zoom
+- Preview mini-map with draggable viewport
+- Nested spans with automatic layout
+- Customizable colors per nesting level
+- TypeScript-first API
+
+## Quick look
+
+```tsx
+import {
+  Timeline,
+  TimelinePreview,
+  TimelineProvider,
+  type TimelineSpan,
+} from 'trailix';
+
+const spans: TimelineSpan[] = [
+  { id: 'a', name: 'Init', startTime: 0, duration: 120 },
+  {
+    id: 'b',
+    name: 'Fetch',
+    startTime: 120,
+    duration: 820,
+    children: [
+      { id: 'b1', name: 'API', startTime: 160, duration: 520 },
+      { id: 'b2', name: 'Parse', startTime: 700, duration: 150 },
+    ],
+  },
+];
+
+export default function Example() {
+  return (
+    <TimelineProvider spans={spans} totalDuration={1200}>
+      <TimelinePreview />
+      <Timeline />
+    </TimelineProvider>
+  );
+}
+```

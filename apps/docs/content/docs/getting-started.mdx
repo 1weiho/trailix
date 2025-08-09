@@ -1,0 +1,60 @@
+---
+title: Getting Started
+description: Your first Trailix timeline in minutes.
+---
+
+This guide shows how to render a basic timeline with a preview.
+
+## 1. Define your spans
+
+```ts
+import type { TimelineSpan } from 'trailix';
+
+export const spans: TimelineSpan[] = [
+  {
+    id: 'root',
+    name: 'Load Page',
+    startTime: 0,
+    duration: 2000,
+    children: [
+      { id: 'init', name: 'Init', startTime: 0, duration: 120 },
+      {
+        id: 'fetch',
+        name: 'Fetch Data',
+        startTime: 120,
+        duration: 820,
+        children: [
+          { id: 'api', name: 'API Request', startTime: 160, duration: 520 },
+          { id: 'parse', name: 'Parse JSON', startTime: 700, duration: 150 },
+        ],
+      },
+      { id: 'render', name: 'Render UI', startTime: 980, duration: 720 },
+    ],
+  },
+];
+```
+
+- **startTime**: in milliseconds from 0.
+- **duration**: in milliseconds.
+- **children**: optional nested spans.
+
+## 2. Render the components
+
+```tsx
+'use client';
+
+import { Timeline, TimelinePreview, TimelineProvider } from 'trailix';
+import { spans } from './spans';
+
+export default function Page() {
+  const totalDuration = 2200; // ms
+  return (
+    <TimelineProvider spans={spans} totalDuration={totalDuration}>
+      <TimelinePreview />
+      <Timeline className="w-full" />
+    </TimelineProvider>
+  );
+}
+```
+
+That’s it. You have an interactive timeline with zooming, selection, and a draggable preview viewport.

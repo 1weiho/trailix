@@ -1,0 +1,73 @@
+---
+title: TimelineProvider
+description: Context provider that wires data and view state for Trailix components.
+---
+
+`TimelineProvider` must wrap `Timeline` and `TimelinePreview`. It supplies spans, total duration, and manages the current view window.
+
+## Props
+
+```ts
+interface TimelineProviderProps {
+  spans: TimelineSpan[];
+  totalDuration: number; // ms
+  initialStart?: number; // default 0
+  initialEnd?: number; // default totalDuration
+  levelStyles?: ColorStyle[]; // optional color palette by nesting level
+  children: React.ReactNode;
+}
+```
+
+### levelStyles (optional)
+
+Customize background, text color, and optional border per nesting level:
+
+```ts
+export interface ColorStyle {
+  background: string;
+  color: string;
+  border?: string;
+}
+```
+
+Defaults:
+
+```ts
+[
+  { background: '#374151', color: 'white' },
+  { background: '#f3f4f6', color: '#374151', border: '1px solid #e5e7eb' },
+  { background: '#e5e7eb', color: '#1f2937', border: '1px solid #d1d5db' },
+  { background: '#d1d5db', color: '#1f2937', border: '1px solid #9ca3af' },
+  { background: '#4b5563', color: 'white' },
+];
+```
+
+## Usage
+
+```tsx
+import { TimelineProvider } from 'trailix';
+
+<TimelineProvider
+  spans={spans}
+  totalDuration={2200}
+  initialStart={0}
+  initialEnd={2200}
+>
+  {/* children */}
+</TimelineProvider>;
+```
+
+## Accessing context
+
+If you’re building custom UI, use `useTimelineContext()`:
+
+```tsx
+import { useTimelineContext } from 'trailix';
+
+function ZoomToStart() {
+  const { onViewChange } = useTimelineContext();
+  return (
+    <button onClick={() => onViewChange(0, 500)}>Zoom to first 500ms</button>
+  );
+}
+```

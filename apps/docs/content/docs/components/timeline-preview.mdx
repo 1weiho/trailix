@@ -1,0 +1,27 @@
+---
+title: TimelinePreview
+description: A compact overview with a draggable viewport to pan the main timeline.
+---
+
+`TimelinePreview` renders a mini-map of all spans and a viewport representing the current window.
+
+## Props
+
+```ts
+interface TimelinePreviewProps {
+  className?: string;
+}
+```
+
+## Interactions
+
+- Click outside the viewport to center the main view there.
+- Drag the viewport to pan while keeping the zoom level.
+
+## Example
+
+```tsx
+<div className="mt-4">
+  <TimelinePreview />
+</div>
+```

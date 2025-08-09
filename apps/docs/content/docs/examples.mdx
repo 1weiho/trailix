@@ -1,0 +1,75 @@
+---
+title: Examples
+description: Practical snippets for common setups.
+---
+
+## Full demo
+
+```tsx
+'use client';
+
+import {
+  Timeline,
+  TimelinePreview,
+  TimelineProvider,
+  type TimelineSpan,
+} from 'trailix';
+
+const spans: TimelineSpan[] = [
+  {
+    id: 'root-load',
+    name: 'Load Page',
+    startTime: 0,
+    duration: 2000,
+    children: [
+      { id: 'init', name: 'Init', startTime: 0, duration: 120 },
+      {
+        id: 'fetch',
+        name: 'Fetch Data',
+        startTime: 120,
+        duration: 820,
+        children: [
+          { id: 'api', name: 'API Request', startTime: 160, duration: 520 },
+          { id: 'parse', name: 'Parse JSON', startTime: 700, duration: 150 },
+        ],
+      },
+      {
+        id: 'render',
+        name: 'Render UI',
+        startTime: 980,
+        duration: 720,
+      },
+      { id: 'hydrate', name: 'Hydrate', startTime: 1740, duration: 180 },
+    ],
+  },
+  { id: 'analytics', name: 'Analytics', startTime: 1820, duration: 300 },
+];
+
+export default function Demo() {
+  const totalDuration = 2200;
+  return (
+    <div className="space-y-3">
+      <TimelineProvider spans={spans} totalDuration={totalDuration}>
+        <TimelinePreview />
+        <Timeline className="w-full" snapToSpan />
+      </TimelineProvider>
+    </div>
+  );
+}
+```
+
+## Custom colors per level
+
+```tsx
+<TimelineProvider
+  spans={spans}
+  totalDuration={totalDuration}
+  levelStyles={[
+    { background: '#0ea5e9', color: 'white' },
+    { background: '#e0f2fe', color: '#075985', border: '1px solid #bae6fd' },
+    { background: '#fde68a', color: '#713f12' },
+  ]}
+>
+  <Timeline />
+</TimelineProvider>
+```

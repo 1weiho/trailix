@@ -1,0 +1,32 @@
+---
+title: Timeline
+description: The main interactive timeline view with spans, selection, hover line, and zoom controls.
+---
+
+`Timeline` renders the primary, detailed view of spans.
+
+## Props
+
+```ts
+interface TimelineProps {
+  className?: string;
+  snapToSpan?: boolean; // default false
+}
+```
+
+- **className**: Add custom CSS classes.
+- **snapToSpan**: When selecting or hovering, the indicator can snap to nearby span boundaries for precise alignment.
+
+## Behaviors
+
+- Click a span to zoom to it (with a small padding).
+- Click-drag across the header or content to select a window and zoom.
+- Hover shows a vertical time line with a tooltip.
+- Zoom controls (bottom-right): zoom-in, reset, zoom-out.
+- Time markers adjust dynamically based on the current view.
+
+## Example
+
+```tsx
+<Timeline className="w-full" snapToSpan />
+```

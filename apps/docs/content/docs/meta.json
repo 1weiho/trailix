@@ -1,0 +1,13 @@
+{
+  "root": true,
+  "pages": [
+    "---Introduction---",
+    "index",
+    "installation",
+    "getting-started",
+    "---Using---",
+    "examples",
+    "components",
+    "types"
+  ]
+}
