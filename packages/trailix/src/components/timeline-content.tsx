@@ -45,7 +45,7 @@ export function TimelineContent({
   selectionStart,
   selectionEnd,
 }: TimelineContentProps) {
-  const innerHeight = spans.length * (SPAN_HEIGHT + SPAN_MARGIN) + 20;
+  const innerHeight = spans.length * (SPAN_HEIGHT + SPAN_MARGIN) + 36;
   return (
     <div className="timeline-content">
       <div

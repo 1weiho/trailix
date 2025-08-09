@@ -41,7 +41,7 @@ export default function HomePage() {
           id: 'render',
           name: 'Render UI',
           startTime: 980,
-          duration: 720,
+          duration: 1020,
           children: [
             {
               id: 'list',
@@ -57,23 +57,11 @@ export default function HomePage() {
             },
           ],
         },
-        {
-          id: 'hydrate',
-          name: 'Hydrate',
-          startTime: 1740,
-          duration: 180,
-        },
       ],
-    },
-    {
-      id: 'analytics',
-      name: 'Analytics',
-      startTime: 1820,
-      duration: 300,
     },
   ];
 
-  const totalDuration = 2200;
+  const totalDuration = 2000;
 
   return (
     <main className="flex flex-1 flex-col items-center text-center gap-20 py-16">

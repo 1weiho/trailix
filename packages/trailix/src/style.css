@@ -189,6 +189,11 @@
   right: 16px;
   display: flex;
   gap: 4px;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 4px;
+  border-radius: 18px;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
 }
 
 .timeline-control-button {
@@ -196,8 +201,6 @@
   height: 32px;
   width: 32px;
   padding: 0;
-  border: 1px solid #e5e7eb;
-  background-color: white;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -205,7 +208,7 @@
 }
 
 .timeline-control-button:hover {
-  background-color: #f9fafb;
+  background-color: rgba(249, 250, 251, 1);
 }
 
 .timeline-control-button:disabled {
