@@ -30,6 +30,11 @@ export interface ColorStyle {
 }
 ```
 
+Usage and levels:
+
+- The `levelStyles` palette is applied by nesting level (level 0, 1, 2, …) to color nested spans.
+- Provide five entries (five `ColorStyle` objects) for best results; the defaults include five. If the nesting depth exceeds the provided entries, the palette cycles using `level % levelStyles.length`.
+
 Defaults:
 
 ```ts

@@ -67,9 +67,13 @@ export default function Demo() {
   levelStyles={[
     { background: '#0ea5e9', color: 'white' },
     { background: '#e0f2fe', color: '#075985', border: '1px solid #bae6fd' },
-    { background: '#fde68a', color: '#713f12' },
+    { background: '#fde68a', color: '#713f12', border: '1px solid #fcd34d' },
+    { background: '#bbf7d0', color: '#166534', border: '1px solid #86efac' },
+    { background: '#ddd6fe', color: '#4c1d95', border: '1px solid #c4b5fd' },
   ]}
 >
   <Timeline />
 </TimelineProvider>
 ```
+
+Note: `levelStyles` are applied by nesting level. Provide five entries to cover typical depth; deeper levels wrap around the palette.
