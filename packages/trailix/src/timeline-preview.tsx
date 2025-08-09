@@ -25,6 +25,7 @@ const TimelinePreview = ({ className = '' }: TimelinePreviewProps) => {
     height: 0,
   });
   const [forcePreviewUpdate, setForcePreviewUpdate] = useState(0);
+  const lastTouchRef = useRef<number | null>(null);
 
   const {
     spans,
@@ -197,6 +198,92 @@ const TimelinePreview = ({ className = '' }: TimelinePreviewProps) => {
     setIsResizingRight(false);
   };
 
+  // Touch helpers and handlers
+  interface BasicTouch {
+    clientX: number;
+    clientY: number;
+  }
+  const getTouchRelativeX = (touch: BasicTouch) => {
+    if (!previewRef.current) return 0;
+    const rect = previewRef.current.getBoundingClientRect();
+    return touch.clientX - rect.left;
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (!previewRef.current) return;
+    if (e.touches.length !== 1) return; // Only single-finger interactions for preview
+    const rect = previewRef.current.getBoundingClientRect();
+    const x = getTouchRelativeX(e.touches[0]);
+    const touchTime = pixelToTime(x, rect.width);
+
+    if (touchTime >= viewStart && touchTime <= viewEnd) {
+      setIsDragging(true);
+      setDragStart(touchTime);
+      setDragOffset(touchTime - viewStart);
+    } else {
+      const viewDuration = viewEnd - viewStart;
+      const newStart = Math.max(0, touchTime - viewDuration / 2);
+      const newEnd = Math.min(totalDuration, newStart + viewDuration);
+      onViewChange(newStart, newEnd);
+    }
+    lastTouchRef.current = Date.now();
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!previewRef.current) return;
+    if (e.touches.length !== 1) return;
+
+    const rect = previewRef.current.getBoundingClientRect();
+    const x = getTouchRelativeX(e.touches[0]);
+    const currentTime = pixelToTime(x, rect.width);
+
+    const minViewportTime = pixelToTime(4, rect.width);
+
+    if (isDragging) {
+      const viewDuration = viewEnd - viewStart;
+      const newStart = Math.max(
+        0,
+        Math.min(totalDuration - viewDuration, currentTime - dragOffset),
+      );
+      const newEnd = newStart + viewDuration;
+      onViewChange(newStart, newEnd);
+      e.preventDefault();
+      return;
+    }
+
+    if (isResizingLeft) {
+      const clampedStart = Math.max(
+        0,
+        Math.min(viewEnd - minViewportTime, currentTime),
+      );
+      onViewChange(clampedStart, viewEnd);
+      e.preventDefault();
+      return;
+    }
+
+    if (isResizingRight) {
+      const clampedEnd = Math.min(
+        totalDuration,
+        Math.max(viewStart + minViewportTime, currentTime),
+      );
+      onViewChange(viewStart, clampedEnd);
+      e.preventDefault();
+      return;
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+    setIsResizingLeft(false);
+    setIsResizingRight(false);
+  };
+
+  const handleTouchCancel = () => {
+    setIsDragging(false);
+    setIsResizingLeft(false);
+    setIsResizingRight(false);
+  };
+
   const previewHeight = Math.max(
     40,
     Math.min(80, 15 + layoutSpans.totalRows * 6),
@@ -220,6 +307,10 @@ const TimelinePreview = ({ className = '' }: TimelinePreviewProps) => {
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseLeave}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchCancel}
       >
         {layoutSpans.spans.map((span) => {
           const containerWidth = previewRef.current?.clientWidth || 0;
@@ -272,10 +363,20 @@ const TimelinePreview = ({ className = '' }: TimelinePreviewProps) => {
               e.preventDefault();
               setIsResizingLeft(true);
             }}
+            onTouchStart={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              setIsResizingLeft(true);
+            }}
           />
           <div
             className="timeline-preview-viewport-handle timeline-preview-viewport-handle-right"
             onMouseDown={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              setIsResizingRight(true);
+            }}
+            onTouchStart={(e) => {
               e.stopPropagation();
               e.preventDefault();
               setIsResizingRight(true);

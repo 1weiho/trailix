@@ -43,6 +43,19 @@ const Timeline = ({ className = '', snapToSpan = false }: TimelineProps) => {
 
   const timelineRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isTouchPanning, setIsTouchPanning] = useState(false);
+  const touchPanRef = useRef<{
+    startX: number;
+    initialViewStart: number;
+    initialViewEnd: number;
+  } | null>(null);
+  const pinchRef = useRef<{
+    initialDistance: number;
+    initialCenterTime: number;
+    initialViewStart: number;
+    initialViewEnd: number;
+    lastDuration: number;
+  } | null>(null);
 
   const viewDuration = viewEnd - viewStart;
 
@@ -182,6 +195,140 @@ const Timeline = ({ className = '', snapToSpan = false }: TimelineProps) => {
     setSelectionEnd(0);
   };
 
+  // Touch handlers for mobile
+  interface BasicTouch {
+    clientX: number;
+    clientY: number;
+  }
+
+  const getTouchRelativeX = (touch: BasicTouch) => {
+    if (!containerRef.current) return 0;
+    const rect = containerRef.current.getBoundingClientRect();
+    return touch.clientX - rect.left;
+  };
+
+  const distanceBetweenTouches = (t1: BasicTouch, t2: BasicTouch) => {
+    const dx = t2.clientX - t1.clientX;
+    const dy = t2.clientY - t1.clientY;
+    return Math.hypot(dx, dy);
+  };
+
+  const midpointClientX = (t1: BasicTouch, t2: BasicTouch) =>
+    (t1.clientX + t2.clientX) / 2;
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (!containerRef.current) return;
+    if (e.touches.length === 1) {
+      const x = getTouchRelativeX(e.touches[0]);
+      touchPanRef.current = {
+        startX: x,
+        initialViewStart: viewStart,
+        initialViewEnd: viewEnd,
+      };
+      setIsTouchPanning(true);
+      setIsSelecting(false);
+      setMousePosition(null);
+    } else if (e.touches.length === 2) {
+      const [t1, t2] = [e.touches[0], e.touches[1]];
+      const initialDistance = distanceBetweenTouches(t1, t2);
+      const rect = containerRef.current.getBoundingClientRect();
+      const midX = midpointClientX(t1, t2) - rect.left;
+      const centerTime = pixelToTime(midX, rect.width);
+      pinchRef.current = {
+        initialDistance,
+        initialCenterTime: centerTime,
+        initialViewStart: viewStart,
+        initialViewEnd: viewEnd,
+        lastDuration: viewEnd - viewStart,
+      };
+      setIsSelecting(false);
+      setIsTouchPanning(false);
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!containerRef.current) return;
+    if (e.touches.length === 1 && !pinchRef.current && touchPanRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      const x = getTouchRelativeX(e.touches[0]);
+      const startX = touchPanRef.current.startX;
+      const initialStart = touchPanRef.current.initialViewStart;
+      const initialEnd = touchPanRef.current.initialViewEnd;
+      const initialDuration = initialEnd - initialStart;
+      const deltaPx = x - startX;
+      const deltaTime = (deltaPx / rect.width) * initialDuration;
+      let newStart = initialStart - deltaTime;
+      let newEnd = initialEnd - deltaTime;
+      const duration = newEnd - newStart;
+      if (newStart < 0) {
+        newStart = 0;
+        newEnd = duration;
+      }
+      if (newEnd > totalDuration) {
+        newEnd = totalDuration;
+        newStart = Math.max(0, newEnd - duration);
+      }
+      onViewChange(newStart, newEnd);
+      e.preventDefault();
+    } else if (e.touches.length === 2 && pinchRef.current) {
+      const [t1, t2] = [e.touches[0], e.touches[1]];
+      const currentDistance = distanceBetweenTouches(t1, t2);
+      const pinch = pinchRef.current;
+      const initialDuration = pinch.initialViewEnd - pinch.initialViewStart;
+      if (currentDistance <= 0 || initialDuration <= 0) return;
+      const scale = pinch.initialDistance / currentDistance; // >1 zoom out, <1 zoom in
+      let newDuration = initialDuration * scale;
+      newDuration = Math.max(0.001, Math.min(totalDuration, newDuration));
+      const fractionLeft =
+        (pinch.initialCenterTime - pinch.initialViewStart) /
+        (initialDuration || 1);
+      let newStart = pinch.initialCenterTime - newDuration * fractionLeft;
+      let newEnd = newStart + newDuration;
+      if (newStart < 0) {
+        newStart = 0;
+        newEnd = newDuration;
+      }
+      if (newEnd > totalDuration) {
+        newEnd = totalDuration;
+        newStart = Math.max(0, newEnd - newDuration);
+      }
+      onViewChange(newStart, newEnd);
+      pinchRef.current = { ...pinch, lastDuration: newDuration };
+      e.preventDefault();
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (pinchRef.current) {
+      // finalize pinch and update zoom level relative to lastDuration
+      const pinch = pinchRef.current;
+      const initialDuration = pinch.initialViewEnd - pinch.initialViewStart;
+      const finalDuration = pinch.lastDuration || viewEnd - viewStart;
+      if (initialDuration > 0 && finalDuration > 0) {
+        const ratio = initialDuration / finalDuration;
+        setZoomLevel((prev) => prev * ratio);
+      }
+      pinchRef.current = null;
+      return;
+    }
+    // End pan
+    if (isTouchPanning || touchPanRef.current) {
+      setIsTouchPanning(false);
+      touchPanRef.current = null;
+      return;
+    }
+  };
+
+  const handleTouchCancel = () => {
+    pinchRef.current = null;
+    touchPanRef.current = null;
+    setIsSelecting(false);
+    setSelectionStart(0);
+    setSelectionEnd(0);
+    setMousePosition(null);
+    setIsTouchPanning(false);
+  };
+
   const handleMouseLeave = () => {
     setMousePosition(null);
     if (isSelecting) {
@@ -289,6 +436,10 @@ const Timeline = ({ className = '', snapToSpan = false }: TimelineProps) => {
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseLeave}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchCancel}
         timeToPixel={timeToPixel}
         mousePosition={mousePosition}
         isSelecting={isSelecting}
@@ -306,6 +457,10 @@ const Timeline = ({ className = '', snapToSpan = false }: TimelineProps) => {
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseLeave}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchCancel}
         onSpanClick={handleSpanClick}
         formatTime={formatTime}
         getLevelStyle={getLevelStyle}

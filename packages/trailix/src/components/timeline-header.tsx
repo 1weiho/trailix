@@ -10,6 +10,10 @@ interface TimelineHeaderProps {
   onMouseDown: (e: React.MouseEvent) => void;
   onMouseUp: () => void;
   onMouseLeave: () => void;
+  onTouchStart: (e: React.TouchEvent) => void;
+  onTouchMove: (e: React.TouchEvent) => void;
+  onTouchEnd: (e: React.TouchEvent) => void;
+  onTouchCancel: (e: React.TouchEvent) => void;
   timeToPixel: (time: number, widthOverride?: number) => number;
   mousePosition: number | null;
   isSelecting: boolean;
@@ -25,6 +29,10 @@ export function TimelineHeader({
   onMouseDown,
   onMouseUp,
   onMouseLeave,
+  onTouchStart,
+  onTouchMove,
+  onTouchEnd,
+  onTouchCancel,
   timeToPixel,
   mousePosition,
   isSelecting,
@@ -49,6 +57,10 @@ export function TimelineHeader({
         onMouseDown={onMouseDown}
         onMouseUp={onMouseUp}
         onMouseLeave={onMouseLeave}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+        onTouchCancel={onTouchCancel}
       >
         {timeMarkers.map((time) => {
           const leftPosition = timeToPixel(time, containerWidth);

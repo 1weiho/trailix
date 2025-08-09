@@ -15,6 +15,10 @@ interface TimelineContentProps {
   onMouseDown: (e: React.MouseEvent) => void;
   onMouseUp: () => void;
   onMouseLeave: () => void;
+  onTouchStart: (e: React.TouchEvent) => void;
+  onTouchMove: (e: React.TouchEvent) => void;
+  onTouchEnd: (e: React.TouchEvent) => void;
+  onTouchCancel: (e: React.TouchEvent) => void;
   onSpanClick: (span: FlattenedSpan) => void;
   formatTime: (time: number) => string;
   getLevelStyle: (level: number) => ColorStyle;
@@ -37,6 +41,10 @@ export function TimelineContent({
   onMouseDown,
   onMouseUp,
   onMouseLeave,
+  onTouchStart,
+  onTouchMove,
+  onTouchEnd,
+  onTouchCancel,
   onSpanClick,
   formatTime,
   getLevelStyle,
@@ -56,6 +64,10 @@ export function TimelineContent({
         onMouseDown={onMouseDown}
         onMouseUp={onMouseUp}
         onMouseLeave={onMouseLeave}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+        onTouchCancel={onTouchCancel}
       >
         {spans.map((span, index) => {
           const spanStart = Math.max(viewStart, span.startTime);
