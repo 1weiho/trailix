@@ -1,7 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { Timeline, TimelineProvider, type TimelineSpan } from 'trailix';
+import {
+  Timeline,
+  TimelinePreview,
+  TimelineProvider,
+  type TimelineSpan,
+} from 'trailix';
 
 export default function HomePage() {
   const spans: TimelineSpan[] = [
@@ -92,16 +97,17 @@ export default function HomePage() {
       </div>
 
       <div className="w-full max-w-5xl">
-        <div className="rounded-xl border bg-fd-card p-2">
-          <TimelineProvider
-            spans={spans}
-            totalDuration={totalDuration}
-            initialStart={0}
-            initialEnd={totalDuration}
-          >
+        <TimelineProvider
+          spans={spans}
+          totalDuration={totalDuration}
+          initialStart={0}
+          initialEnd={totalDuration}
+        >
+          <TimelinePreview className="w-full" />
+          <div className="rounded-xl border bg-fd-card p-2">
             <Timeline className="w-full" />
-          </TimelineProvider>
-        </div>
+          </div>
+        </TimelineProvider>
       </div>
     </main>
   );
