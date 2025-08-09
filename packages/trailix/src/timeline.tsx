@@ -490,12 +490,33 @@ const Timeline = ({ className = '', snapToSpan = false }: TimelineProps) => {
             <div
               className="timeline-mouse-line"
               style={{
-                left: `${timeToPixel(mousePosition, containerRef.current?.clientWidth || 0)}px`,
+                left: `${timeToPixel(
+                  mousePosition,
+                  containerRef.current?.clientWidth || 0,
+                )}px`,
               }}
             >
-              <div className="timeline-mouse-tooltip">
-                {formatTime(mousePosition)}
-              </div>
+              {(() => {
+                const containerWidth =
+                  containerRef.current?.clientWidth || 1000;
+                const mouseLeftPx = timeToPixel(mousePosition, containerWidth);
+                const tooltipWidth = estimateLabelWidth(mousePosition);
+                const shouldFlipLeft =
+                  mouseLeftPx + 4 + tooltipWidth > containerWidth - 5;
+                return (
+                  <div
+                    className="timeline-mouse-tooltip"
+                    style={{
+                      left: shouldFlipLeft ? '0px' : '4px',
+                      transform: shouldFlipLeft
+                        ? 'translateX(calc(-100% - 4px))'
+                        : 'none',
+                    }}
+                  >
+                    {formatTime(mousePosition)}
+                  </div>
+                );
+              })()}
             </div>
           )}
 
