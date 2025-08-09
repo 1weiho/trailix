@@ -56,6 +56,15 @@ const Timeline = ({ className = '', snapToSpan = false }: TimelineProps) => {
     [viewStart, viewDuration, containerDimensions.width],
   );
 
+  // Unclamped conversion used for precise snapping so that timeline edges map to exact times (e.g. 0ms)
+  const timeToPixelUnclamped = useCallback(
+    (time: number, containerWidth?: number) => {
+      const width = containerWidth || containerDimensions.width || 1000;
+      return ((time - viewStart) / viewDuration) * width;
+    },
+    [viewStart, viewDuration, containerDimensions.width],
+  );
+
   const pixelToTime = useCallback(
     (pixel: number, containerWidth?: number) => {
       const width = containerWidth || containerDimensions.width || 1000;
@@ -132,20 +141,27 @@ const Timeline = ({ className = '', snapToSpan = false }: TimelineProps) => {
     const rawX = e.clientX - rect.left;
 
     let useX = rawX;
-    if (snapToSpan && flatSpans.length > 0) {
-      const boundaries = flatSpans.flatMap((span) => {
-        const startPx = timeToPixel(span.startTime, rect.width);
-        const endPx = timeToPixel(span.startTime + span.duration, rect.width);
-        return [startPx, endPx];
-      });
-      let nearest = boundaries[0];
-      for (const px of boundaries) {
-        if (Math.abs(px - rawX) < Math.abs(nearest - rawX)) {
-          nearest = px;
-        }
+    if (snapToSpan) {
+      const candidateTimes = new Set<number>([viewStart, viewEnd]);
+      for (const span of flatSpans) {
+        candidateTimes.add(span.startTime);
+        candidateTimes.add(span.startTime + span.duration);
       }
-      if (Math.abs(nearest - rawX) <= SNAP_MARGIN_PX) {
-        useX = nearest;
+
+      const boundariesPx = Array.from(candidateTimes)
+        .filter((t) => t >= viewStart && t <= viewEnd)
+        .map((t) => timeToPixelUnclamped(t, rect.width));
+
+      if (boundariesPx.length > 0) {
+        let nearest = boundariesPx[0];
+        for (const px of boundariesPx) {
+          if (Math.abs(px - rawX) < Math.abs(nearest - rawX)) {
+            nearest = px;
+          }
+        }
+        if (Math.abs(nearest - rawX) <= SNAP_MARGIN_PX) {
+          useX = nearest;
+        }
       }
     }
 
