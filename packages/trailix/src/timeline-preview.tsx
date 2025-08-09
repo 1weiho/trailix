@@ -15,6 +15,8 @@ interface TimelinePreviewProps {
 
 const TimelinePreview = ({ className = '' }: TimelinePreviewProps) => {
   const [isDragging, setIsDragging] = useState(false);
+  const [isResizingLeft, setIsResizingLeft] = useState(false);
+  const [isResizingRight, setIsResizingRight] = useState(false);
   const [dragStart, setDragStart] = useState(0);
   const [dragOffset, setDragOffset] = useState(0);
   const previewRef = useRef<HTMLDivElement>(null);
@@ -144,27 +146,55 @@ const TimelinePreview = ({ className = '' }: TimelinePreviewProps) => {
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging || !previewRef.current) return;
+    if (!previewRef.current) return;
 
     const rect = previewRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const currentTime = pixelToTime(x, rect.width);
-    const viewDuration = viewEnd - viewStart;
-    const newStart = Math.max(
-      0,
-      Math.min(totalDuration - viewDuration, currentTime - dragOffset),
-    );
-    const newEnd = newStart + viewDuration;
 
-    onViewChange(newStart, newEnd);
+    // Minimum viewport width in pixels converted to time to match CSS min width (4px)
+    const minViewportTime = pixelToTime(4, rect.width);
+
+    if (isDragging) {
+      const viewDuration = viewEnd - viewStart;
+      const newStart = Math.max(
+        0,
+        Math.min(totalDuration - viewDuration, currentTime - dragOffset),
+      );
+      const newEnd = newStart + viewDuration;
+      onViewChange(newStart, newEnd);
+      return;
+    }
+
+    if (isResizingLeft) {
+      const clampedStart = Math.max(
+        0,
+        Math.min(viewEnd - minViewportTime, currentTime),
+      );
+      onViewChange(clampedStart, viewEnd);
+      return;
+    }
+
+    if (isResizingRight) {
+      const clampedEnd = Math.min(
+        totalDuration,
+        Math.max(viewStart + minViewportTime, currentTime),
+      );
+      onViewChange(viewStart, clampedEnd);
+      return;
+    }
   };
 
   const handleMouseUp = () => {
     setIsDragging(false);
+    setIsResizingLeft(false);
+    setIsResizingRight(false);
   };
 
   const handleMouseLeave = () => {
     setIsDragging(false);
+    setIsResizingLeft(false);
+    setIsResizingRight(false);
   };
 
   const previewHeight = Math.max(
@@ -235,8 +265,22 @@ const TimelinePreview = ({ className = '' }: TimelinePreviewProps) => {
             width: `${Math.max(4, Math.min(previewRef.current?.clientWidth || 0, timeToPixel(viewEnd - viewStart, previewRef.current?.clientWidth || 0)))}px`,
           }}
         >
-          <div className="timeline-preview-viewport-handle timeline-preview-viewport-handle-left" />
-          <div className="timeline-preview-viewport-handle timeline-preview-viewport-handle-right" />
+          <div
+            className="timeline-preview-viewport-handle timeline-preview-viewport-handle-left"
+            onMouseDown={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              setIsResizingLeft(true);
+            }}
+          />
+          <div
+            className="timeline-preview-viewport-handle timeline-preview-viewport-handle-right"
+            onMouseDown={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              setIsResizingRight(true);
+            }}
+          />
         </div>
       </div>
     </div>
