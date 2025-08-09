@@ -22,20 +22,20 @@ export function TimelineControls({
     <div className="timeline-controls">
       <button
         className="timeline-control-button"
-        onClick={onZoomIn}
-        disabled={!canZoomIn}
+        onClick={onZoomOut}
+        disabled={!canZoomOut}
       >
-        <ZoomIn className="timeline-control-icon" />
+        <ZoomOut className="timeline-control-icon" />
       </button>
       <button className="timeline-control-button" onClick={onReset}>
         <Minus className="timeline-control-icon" />
       </button>
       <button
         className="timeline-control-button"
-        onClick={onZoomOut}
-        disabled={!canZoomOut}
+        onClick={onZoomIn}
+        disabled={!canZoomIn}
       >
-        <ZoomOut className="timeline-control-icon" />
+        <ZoomIn className="timeline-control-icon" />
       </button>
     </div>
   );
