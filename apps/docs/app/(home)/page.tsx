@@ -69,7 +69,7 @@ export default function HomePage() {
   const totalDuration = 2000;
 
   return (
-    <main className="flex flex-1 flex-col items-center text-center gap-20 py-16">
+    <main className="flex flex-1 flex-col items-center text-center gap-16 py-28">
       <div className="flex max-w-3xl flex-col items-center gap-4">
         <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
           Visualize timelines with Trailix
